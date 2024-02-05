@@ -14,7 +14,6 @@ import superapp.dal.IdGeneratorCrud;
 import superapp.dal.MiniAppCommandCrud;
 import superapp.dal.SuperAppObjectCrud;
 import superapp.dal.UsersCrud;
-import superapp.fixture.Generator;
 import superapp.data.*;
 import superapp.logic.helpers.MiniAppCommandHelper;
 import superapp.logic.helpers.MovieHelper;
@@ -24,7 +23,6 @@ import superapp.models.*;
 import superapp.myMovies.models.MediaGroup;
 import superapp.myMovies.models.Movie;
 import superapp.myMovies.models.Trailer;
-import superapp.requestModels.MiniAppCommandBoundaryModel;
 import superapp.view.MiniAppCommandBoundary;
 import superapp.view.ObjectBoundary;
 import superapp.view.UserBoundary;
@@ -69,8 +67,6 @@ public class AdminServiceHandler implements AdminService {
 
     @Override
     public void deleteAllUsers(String userSuperApp, String userEmail) {
-        logger.debug("admin deleteAllUsers about to be executed");
-        makeAuthorisationChecks(userSuperApp, userEmail);
         logger.debug("admin deleteAllUsers user has been Authorized");
         users.deleteAll();
         logger.trace("admin deleteAllUsers All users have been deleted");
@@ -78,8 +74,6 @@ public class AdminServiceHandler implements AdminService {
 
     @Override
     public void deleteAllObjects(String userSuperApp, String userEmail) {
-        logger.debug("admin deleteAllObjects about to be executed");
-        makeAuthorisationChecks(userSuperApp, userEmail);
         logger.debug("admin deleteAllObjects user has been Authorized");
         objects.deleteAll();
         logger.trace("admin deleteAllObjects All objects have been deleted");
@@ -121,8 +115,6 @@ public class AdminServiceHandler implements AdminService {
 
     @Override
     public void deleteAllCommandsHistory(String userSuperApp, String userEmail) {
-        logger.debug("admin deleteAllCommandsHistory about to be executed");
-        makeAuthorisationChecks(userSuperApp, userEmail);
         logger.debug("admin deleteAllCommandsHistory user has been Authorized");
         logger.trace("admin deleteAllCommandsHistory All commands have been deleted");
         commands.deleteAll();
@@ -131,8 +123,6 @@ public class AdminServiceHandler implements AdminService {
     @Transactional(readOnly = true)
     @Override
     public List<UserBoundary> exportAllUsers(String userSuperApp, String userEmail, int size, int page) {
-        logger.debug("admin exportAllUsers about to be executed");
-        makeAuthorisationChecks(userSuperApp, userEmail);
         logger.debug("admin exportAllUsers user has been Authorized");
         logger.trace("admin exportAllUsers is being executed...");
         return users
@@ -144,8 +134,6 @@ public class AdminServiceHandler implements AdminService {
 
     @Override
     public List<MiniAppCommandBoundary> exportAllCommandsHistory(String userSuperApp, String userEmail, int size, int page) {
-        logger.debug("admin exportAllCommandsHistory about to be executed");
-        makeAuthorisationChecks(userSuperApp, userEmail);
         logger.debug("admin exportAllCommandsHistory user has been Authorized");
         logger.trace("admin exportAllCommandsHistory is being executed...");
         return commands
@@ -157,8 +145,6 @@ public class AdminServiceHandler implements AdminService {
 
     @Override
     public List<MiniAppCommandBoundary> exportSpecificCommandsHistory(String userSuperApp, String userEmail, String miniAppName, int size, int page) throws ResponseStatusException {
-        logger.debug("admin exportSpecificCommandsHistory about to be executed");
-        makeAuthorisationChecks(userSuperApp, userEmail);
         logger.debug("admin exportSpecificCommandsHistory user has been Authorized");
         logger.trace("admin exportSpecificCommandsHistory is being executed...");
         return commands
@@ -173,7 +159,6 @@ public class AdminServiceHandler implements AdminService {
         String id = userHelper.generateUserId(userSuperApp, userEmail);
         logger.debug("updateDataBase About to init Database");
 
-        makeAuthorisationChecks(userSuperApp, userEmail);
         for (int i = 1; i <= 10; i++) {
             MediaGroup upcoming = superAppObjectHelper.buildMediaGroupFromMap(dataFetcher.getForObject(
                     "https://api.themoviedb.org/3/movie/upcoming?language=en&api_key=b3b1492d3e91e9f9403a2989f3031b0c&size=20&page=" + i,
@@ -244,18 +229,5 @@ public class AdminServiceHandler implements AdminService {
                 }
             }
         }catch (Exception e){ }
-    }
-
-    private void makeAuthorisationChecks(String userSuperApp, String userEmail) {
-        String id = userHelper.generateUserId(userSuperApp, userEmail);
-        Optional<UserEntity> user = users.findById(id);
-        if (user.isEmpty()) {
-            logger.warn(USER_NOT_FOUND_MSG);
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, USER_NOT_FOUND_MSG);
-        }
-        if (!user.get().getRole().equals(UserRole.ADMIN)) {
-            logger.warn(USER_NOT_AUTHORISED+": name: "+userSuperApp+" email: "+userEmail);
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, USER_NOT_AUTHORISED);
-        }
     }
 }
