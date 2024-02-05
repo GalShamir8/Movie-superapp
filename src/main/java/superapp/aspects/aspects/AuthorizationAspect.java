@@ -39,14 +39,9 @@ public class AuthorizationAspect {
 
     @Before(value="@annotation(RequiresAuthorization)")
     public void authorize(JoinPoint joinPoint) throws Throwable {
-        // Extract values from method parameters
         System.out.println("[DEBUG]: in authorize");
         Object[] args = joinPoint.getArgs();
         System.out.println("[DEBUG]: arguments = " + Arrays.toString(args));
-//        ArrayList<String> parameterNames = (ArrayList<String>) Arrays
-//                        .stream(((MethodSignature) joinPoint
-//                        .getSignature())
-//                        .getParameterNames()).toList();
         List<String> parameterNames = Arrays.stream(((MethodSignature) joinPoint.getSignature()).getParameterNames()).toList();
         String userSuperApp = (String) args[parameterNames.indexOf("userSuperapp")];
         String userEmail = (String) args[parameterNames.indexOf("email")];
