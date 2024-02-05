@@ -3,6 +3,7 @@ package superapp.controllers;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import superapp.aspects.RequiresAuthorization;
 import superapp.fixture.Generator;
 import superapp.logic.AdminService;
 import superapp.logic.UsersService;
@@ -42,6 +43,7 @@ public class AdminController {
             path = DELETE_ALL_USERS,
             method = RequestMethod.DELETE
     )
+    @RequiresAuthorization
     public void deleteAllUsers(@RequestParam(name = "userSuperapp") String superapp,
                                @RequestParam(name = "userEmail") String email) {
         adminService.deleteAllUsers(superapp, email);
@@ -51,6 +53,7 @@ public class AdminController {
             path = DELETE_ALL_OBJECTS,
             method = RequestMethod.DELETE
     )
+    @RequiresAuthorization
     public void deleteAllObjects(@RequestParam(name = "userSuperapp") String superapp,
                                  @RequestParam(name = "userEmail") String email) {
         adminService.deleteAllObjects(superapp, email);
@@ -60,6 +63,7 @@ public class AdminController {
             path = DELETE_ALL_COMMANDS_HISTORY,
             method = RequestMethod.DELETE
     )
+    @RequiresAuthorization
     public void deleteAllCommandsHistory(@RequestParam(name = "userSuperapp") String superapp,
                                          @RequestParam(name = "userEmail") String email) {
         adminService.deleteAllCommandsHistory(superapp, email);
@@ -70,6 +74,7 @@ public class AdminController {
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE
     )
+    @RequiresAuthorization
     public List<UserBoundary> exportAllUsers(@RequestParam(name = "userSuperapp") String superapp,
                                              @RequestParam(name = "userEmail") String email,
                                              @RequestParam(name = "size", required = false, defaultValue = DEFAULT_PER_PAGE) int size,
@@ -82,6 +87,7 @@ public class AdminController {
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE
     )
+    @RequiresAuthorization
     public List<MiniAppCommandBoundary> exportAllMiniAppCommandsHistory(@RequestParam(name = "userSuperapp") String superapp,
                                                                         @RequestParam(name = "userEmail") String email,
                                                                         @RequestParam(name = "size", required = false, defaultValue = DEFAULT_PER_PAGE) int size,
@@ -94,6 +100,7 @@ public class AdminController {
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE
     )
+    @RequiresAuthorization
     public List<MiniAppCommandBoundary> exportSpecificMiniAppCommandsHistory(@PathVariable("miniAppName") String miniAppName,
                                                                              @RequestParam(name = "userSuperapp", defaultValue = "", required = false) String superapp,
                                                                              @RequestParam(name = "userEmail", defaultValue = "amit.maimon@s.afeka.ac.il", required = false) String email,
@@ -120,6 +127,7 @@ public class AdminController {
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE
     )
+    @RequiresAuthorization
     public String updateData(
             @RequestParam(name = "userSuperapp", defaultValue = "", required = false) String superapp,
             @RequestParam(name = "userEmail", defaultValue = "amit.maimon@s.afeka.ac.il", required = false) String email) throws JsonProcessingException {
